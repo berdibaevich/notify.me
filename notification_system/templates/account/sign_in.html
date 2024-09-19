@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    login
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <h3 class="mb-3 h3_top">Accountǵa kiriw</h3>
+                
+                <form action="" method="post">
+                    {% csrf_token %}
+
+                    <!-- Handle Error and show message -->
+                    {% if form.errors %}
+                    
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <div class="alert alert-primary font_bolder" role="alert">
+                                    {{ field.errors|striptags }}
+                                </div>
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
+                    <!-- End Handle Error and show message -->
+
+                    <!-- USERNAME -->
+                    <label class="font_bolder">
+                        {{ form.user_name.label }} 
+                    </label>
+                    {{ form.user_name }}
+                    <!-- END USERNAME -->
+
+                    <!-- PASSWORD -->
+                    <label class="font_bolder">
+                        {{ form.password.label }}
+                    </label>
+                    
+                    {{ form.password }}
+
+                    <button class="_btn" type="submit">Kiriw</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
