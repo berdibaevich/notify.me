@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Account(AbstractUser):
-    photo = models.ImageField(default="avatars/", null=True, blank=True)
+    photo = models.ImageField(upload_to="avatars/", null=True, blank=True)
 
     REQUIRED_FIELDS = [] # We removed default extra email field
 

@@ -7,8 +7,10 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - ../notification_system:/usr/src/app
-    ports:
-      - "8000:8000"
+      - static_files:/usr/src/app/static
+      - media_files:/usr/src/app/media
+    expose:
+      - 8000
     container_name: notification_system_web
     command: uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --log-level debug
 
@@ -26,5 +28,17 @@ services:
       - ../notification_system/.env
 
 
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ../nginx/conf.d/:/etc/nginx/conf.d/
+      - static_files:/usr/src/app/static
+      - media_files:/usr/src/app/media
+    ports:
+      - "80:80"
+    
+
 volumes:
   notification_data:
+  static_files:
+  media_files:
