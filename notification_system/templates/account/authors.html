@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<style>
+    .avatar-img{
+        width: 60px;
+    }
+</style>
+<div class="row">
+    {% for author in authors %}
+    <div class="col-xl-4 col-md-4 mb-3 mb-lg-5">
+        <!--Card-->
+        <div class="card overflow-hidden text-center">    
+            <!--Card body-->
+            <div class="card-body p-0">
+                <!--avatar-->
+                <img src="{{ author.photo.url }}" class="avatar-img rounded-circle" alt="">
+                <h5 class="mb-0 pt-3">
+                    <a href="#!.html" class="text-reset">{{ author.username }}</a>
+                </h5>
+                <div class="row mx-0 mt-3 border-top border-bottom">
+                    <div class="col-6 text-center border-end py-3">
+                        <h5 id="nums_of_follower_{{ author.id }}" class="mb-0">{{ author.nums_of_follower }}</h5>
+                        <small class="text-muted">Followers</small>
+                    </div>
+                    <div class="col-6 text-center py-3">
+                        <h5 class="mb-0">{{ author.nums_of_following }}</h5>
+                        <small class="text-muted">Following</small>
+                    </div>
+                </div>
+                <div class="text-end p-3">
+                    {% if author.is_following %}
+                        <span id="whatBTN" data-action="unfollow" data-currentUser="{{ request.user.id }}" data-toUser="{{ author.id }}" class="btn btn-danger">Unfollow</span>
+                    {% else %}
+                        <span id="whatBTN" data-action="follow" data-currentUser="{{ request.user.id }}" data-toUser="{{ author.id }}" class="btn btn-primary">Follow</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    const to_URL = "{% url 'account:followOrUnfollow'%}";
+    const CSRF = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/followOrUnfollow.js'%}"></script>
+{% endblock content %}

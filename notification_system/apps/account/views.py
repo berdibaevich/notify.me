@@ -1,7 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Count, Exists, OuterRef
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from . import forms
+from .models import Account
+from ..blog.models import Follow
 
 
 def sign_in(request):
@@ -25,3 +30,33 @@ def sign_in(request):
 def sign_out(request):
     logout(request)
     return redirect('blog:home')
+
+
+@login_required
+def authors(request):
+    is_following_subquery = Follow.objects.filter(
+        follower = request.user, following = OuterRef("pk")
+    )
+    authors = Account.objects.annotate(
+        nums_of_follower = Count("following", distinct=True),
+        nums_of_following = Count("follower", distinct=True),
+        is_following = Exists(is_following_subquery)
+    ).exclude(id = request.user.id)
+    return render(request, 'account/authors.html', {'authors': authors})
+
+
+def followOrUnfollow(request):
+    if request.method == 'POST':
+        user = request.user
+        current_action = request.POST.get("current_action")
+        to_user = int(request.POST.get("to_user"))
+        current_user = int(request.POST.get("current_user"))
+
+        to_user_obj = Account.objects.get(id = to_user)
+        if current_action == "follow" and user.id == current_user:
+            Follow.objects.create(follower = user, following = to_user_obj)
+            return JsonResponse({'success': 200})
+        elif current_action == "unfollow" and user.id == current_user:
+            obj = Follow.objects.get(follower = user, following = to_user_obj)
+            obj.delete()
+            return JsonResponse({'success': 200})

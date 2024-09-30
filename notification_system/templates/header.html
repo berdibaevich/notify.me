@@ -37,14 +37,23 @@
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 header_ul_li">
                 
-                <li><a href="/" class="nav-link px-2 link-body-emphasis">About us</a></li>
+                <li><a href="/" class="nav-link px-2 link-body-emphasis">Blogs</a></li>
+                <li><a href="{% url 'account:authors'%}" class="nav-link px-2 link-body-emphasis">Authors</a></li>
                 <li><a href="/" class="nav-link px-2 link-body-emphasis">News</a></li>
-                <li><a href="/" class="nav-link px-2 link-body-emphasis">FAQs</a></li>
             </ul>
-            <span class="notify_icon">
-                <a href="{% url 'notification:my_notifications'%}"><i class="fa-regular fa-bell"></i></a>
-                <span class="d-none" id="notification"></span>
-            </span>
+            <!-- Notification -->
+            {% if request.path == "/" %}
+                <span class="notify_icon">
+                    <a href="{% url 'notification:my_notifications'%}"><i class="fa-regular fa-bell"></i></a>
+                    <span class="d-none" id="notification"></span>
+                </span>
+            {% else %}
+                <span class="notify_icon">
+                    <a href="{% url 'notification:my_notifications'%}"><i class="fa-regular fa-bell"></i></a>
+                    <span class="{% if unread_notification_count == 0 %}d-none{% endif %}" id="notification">{{ unread_notification_count }}</span>
+                </span>
+            {% endif %}
+            <!-- END Notification -->
             <form action="#" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-5 search__box"  role="search">
                 <input type="search" name="q" class="form-control" placeholder="Blogtı izleń" aria-label="Search">
             </form>
@@ -78,24 +87,3 @@
         </div>
     </div>
 </header>
-
-
-<script>
-    const notification_me = document.getElementById("notification");
-
-    function updateNotificationDisplay() {
-        const cachedCount = localStorage.getItem("notificationCount");
-        if (cachedCount !== null) {
-            const count = parseInt(cachedCount, 10);
-            if (count > 0) {
-                notification_me.textContent = count;
-                notification_me.classList.remove("d-none");
-            } else {
-                notification_me.classList.add("d-none");
-            }
-        }
-    }
-
-    ///setInterval(updateNotificationDisplay, 20000);
-    updateNotificationDisplay();
-</script>

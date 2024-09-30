@@ -2,5 +2,10 @@
 
 
 {% block content %}
-{{notifications}}
+
+    {% if request.user.is_authenticated %}
+        {{notifications}}
+    {% else %}
+        <h2>Hazirshe xabar joq!</h2>
+    {% endif %}
 {% endblock content %}

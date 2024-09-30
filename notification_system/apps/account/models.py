@@ -13,3 +13,7 @@ class Account(AbstractUser):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = "Accounts"
+
+
+class UploadToAvatar(models.Model):
+    photo = models.ImageField(upload_to="avatars/")
