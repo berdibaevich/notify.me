@@ -4,6 +4,11 @@ from django.db.models import Count, Exists, OuterRef
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+from apps.notification.models import Notification
+
 from . import forms
 from .models import Account
 from ..blog.models import Follow
@@ -55,6 +60,17 @@ def followOrUnfollow(request):
         to_user_obj = Account.objects.get(id = to_user)
         if current_action == "follow" and user.id == current_user:
             Follow.objects.create(follower = user, following = to_user_obj)
+
+            # Send notification
+            Notification.objects.create(recipient = to_user_obj, notification_type = 1, object_id = current_user)
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"notification_{to_user_obj.id}",
+                {
+                    "type": "send_notification_from_views",
+                    "who": to_user_obj
+                }
+            )
             return JsonResponse({'success': 200})
         elif current_action == "unfollow" and user.id == current_user:
             obj = Follow.objects.get(follower = user, following = to_user_obj)

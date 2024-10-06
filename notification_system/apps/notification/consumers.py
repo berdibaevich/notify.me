@@ -35,7 +35,14 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({'count': unread_count})
         )
 
+
+    async def send_notification_from_views(self, event):
+        unread_count = await self.get_unread_count(event['who'])
+        await self.send(
+            text_data = json.dumps({'count': unread_count})
+        )
+
     @database_sync_to_async
     def get_unread_count(self, user):
         from apps.notification.models import Notification
-        return Notification.objects.filter(user = user, is_read = False).count()
+        return Notification.objects.filter(recipient = user, is_read = False).count()
